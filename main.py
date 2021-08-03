@@ -21,12 +21,6 @@ import urllib.request
 # called `app` in `main.py`.
 app = Flask(__name__)
 
-
-@app.route('/')
-def hello():
-    """Return a friendly HTTP greeting."""
-    return 'Hello World!'
-
 @app.route('/scrape')
 def scrape():
     url = 'https://allocation.miq.govt.nz/portal/'
@@ -35,6 +29,10 @@ def scrape():
         html = html_bytes.decode("utf-8")
         return html
 
+@app.route('/')
+def hello():
+    """Return a friendly HTTP greeting."""
+    return 'Hello World!'
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
