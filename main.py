@@ -15,7 +15,7 @@
 # [START gae_python38_app]
 # [START gae_python3_app]
 from flask import Flask
-import urllib.request
+from urllib.request import Request, urlopen
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -24,10 +24,11 @@ app = Flask(__name__)
 @app.route('/scrape')
 def scrape():
     url = 'https://allocation.miq.govt.nz/portal/'
-    with urllib.request.urlopen(url) as response:
-        html_bytes = response.read()
-        html = html_bytes.decode("utf-8")
-        return html
+    agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:70.0) Gecko/20100101 Firefox/70.0'
+    req = Request(url, headers={'User-Agent': agent})
+    html_bytes = urlopen(req).read()
+    #html = html_bytes.decode("utf-8")
+    return html_bytes
 
 @app.route('/')
 def hello():
