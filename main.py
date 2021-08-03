@@ -15,7 +15,7 @@
 # [START gae_python38_app]
 # [START gae_python3_app]
 from flask import Flask
-
+import urllib.request
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -26,6 +26,14 @@ app = Flask(__name__)
 def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
+
+@app.route('/scrape')
+def scrape():
+    url = 'https://allocation.miq.govt.nz/portal/'
+    with urllib.request.urlopen(url) as response:
+        html_bytes = response.read()
+        html = html_bytes.decode("utf-8")
+        return html
 
 
 if __name__ == '__main__':
