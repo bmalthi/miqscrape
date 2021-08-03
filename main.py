@@ -33,13 +33,18 @@ def scrape():
     html_bytes = urlopen(req).read()
     html = html_bytes.decode("utf-8")
     #regex = r"<div class=\"no\" . aria-label=\"(\w+ \d+)\".+<\/div>"
-    regex = r"<div(?! class=\"no\") . aria-label=\"(\w+ \d+)\".+<\/div>"
+    regex = r"<div (?!class=\"no\") . aria-label=\"(\w+ \d+)\".+<\/div>"
     test_str = html
     matches = re.finditer(regex, test_str, re.MULTILINE)
-    s = ''
-    for matchNum, match in enumerate(matches, start=1):
-        s = s + match.group(1) +'<br>'
-    return s
+    dates = [match.group(1) for match in matches]
+    if len(dates) > 0:
+        s = 'Open Dates:<br>'
+        for d in dates:
+            s = s + d + '<br>'
+        message('MIQDATE:\n'+str(dates))
+        return s
+    else:
+        return 'No Open Dates'
 
 @app.route('/message')
 def message(txt='helloworld'):
