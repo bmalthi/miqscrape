@@ -13,3 +13,7 @@
 # limitations under the License.
 
 runtime: python39
+
+env_variables:
+    TWILIO_ACCOUNT_SID: AC4ff56a6d29868282b983c5b1b5816af5
+    TWILIO_AUTH_TOKEN: 3fe5cba01d25c4a6889245a2087d54f1

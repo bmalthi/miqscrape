@@ -17,6 +17,8 @@
 from flask import Flask
 from urllib.request import Request, urlopen
 import re
+import os
+from twilio.rest import Client
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -39,10 +41,24 @@ def scrape():
         s = s + match.group(1) +'<br>'
     return s
 
+@app.route('/message')
+def message(txt='helloworld'):
+    account_sid = os.environ['TWILIO_ACCOUNT_SID']
+    auth_token = os.environ['TWILIO_AUTH_TOKEN']
+    client = Client(account_sid, auth_token)
+    message = client.messages.create(
+                                body=txt,
+                                messaging_service_sid='MG79fefe795961065491623dd800fa88e0', 
+                                to='+14157543502'
+                            )
+    return message.sid
+
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
+
+
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
