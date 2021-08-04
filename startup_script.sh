@@ -22,7 +22,7 @@ sudo bash install-logging-agent.sh
 
 # Install or update needed software
 apt-get update
-apt-get install -yq git supervisor python python-pip, python3-pip
+apt-get install -yq git supervisor python python-pip python3-pip
 #pip install --upgrade pip virtualenv
 pip3 install --upgrade pip virtualenv
 
