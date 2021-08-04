@@ -1,7 +1,7 @@
 set -ex
 
 #gcloud config set project miqscrape
-MY_INSTANCE_NAME="my-app-instance-australia-southeast2"
+MY_INSTANCE_NAME="scrape1-au"
 ZONE=australia-southeast1-a
 
 gcloud compute instances create $MY_INSTANCE_NAME \
