@@ -20,6 +20,10 @@ import re
 import os
 from twilio.rest import Client
 
+#Really Naughty
+TWILIO_ACCOUNT_SID = 'AC4ff56a6d29868282b983c5b1b5816af5'
+TWILIO_AUTH_TOKEN = '3fe5cba01d25c4a6889245a2087d54f1'
+
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
 app = Flask(__name__)
@@ -48,8 +52,8 @@ def scrape():
 
 @app.route('/message')
 def message(txt='helloworld'):
-    account_sid = os.environ['TWILIO_ACCOUNT_SID']
-    auth_token = os.environ['TWILIO_AUTH_TOKEN']
+    account_sid = TWILIO_ACCOUNT_SID
+    auth_token = TWILIO_AUTH_TOKEN
     client = Client(account_sid, auth_token)
     message = client.messages.create(
                                 body=txt,
@@ -59,6 +63,7 @@ def message(txt='helloworld'):
     return message.sid
 
 @app.route('/')
+#@app.route('/', methods=['GET']) #As per example?
 def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
