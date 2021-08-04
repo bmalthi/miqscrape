@@ -22,8 +22,9 @@ sudo bash install-logging-agent.sh
 
 # Install or update needed software
 apt-get update
-apt-get install -yq git supervisor python python-pip
-pip install --upgrade pip virtualenv
+apt-get install -yq git supervisor python python-pip, python3-pip
+#pip install --upgrade pip virtualenv
+pip3 install --upgrade pip virtualenv
 
 # Account to own server process
 useradd -m -d /home/pythonapp pythonapp
@@ -48,7 +49,7 @@ ls
 virtualenv -p python3 /opt/app/env
 ls
 source /opt/app/env/bin/activate
-/opt/app/env/bin/pip install -r /opt/app/requirements.txt
+/opt/app/env/bin/pip3 install -r /opt/app/requirements.txt
 
 # Set ownership to newly created account
 chown -R pythonapp:pythonapp /opt/app
