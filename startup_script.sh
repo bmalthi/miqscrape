@@ -28,20 +28,35 @@ pip install --upgrade pip virtualenv
 # Account to own server process
 useradd -m -d /home/pythonapp pythonapp
 
+# Get Github public key from secret manager
+#gcloud secrets versions access 1 --secret="github_key" --format='get(payload.data)' | tr '_-' '/+' | base64 -d > ~/.ssh/id_github
+#mkdir /root/.ssh
+#gcloud secrets versions access 1 --secret="github_key" --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /root/.ssh/id_github
+#chmod 400 /root/.ssh/id_github
+#eval "$(ssh-agent -s)"
+#ssh-add -k /root/.ssh/id_github
+
 # Fetch source code
 export HOME=/root
-git clone https://github.com/bmalthi/miqscrape.git /opt/app
+#mkdir /opt/app
+#cd /opt/app
+#git clone git@github.com:bmalthi/miqscrape.git /opt/app
+gcloud source repos clone github_bmalthi_miqscrape miqscrape
+cd miqscrape
+git checkout main
+pwd
+ls
 
 # Python environment setup
-virtualenv -p python3 /opt/app/gce/env
-source /opt/app/gce/env/bin/activate
-/opt/app/gce/env/bin/pip install -r /opt/app/gce/requirements.txt
+virtualenv -p python3 miqscrape
+source /miqscrape/bin/activate
+/miqscrape/bin/pip install -r /miqscrape/requirements.txt
 
 # Set ownership. to newly created account
-chown -R pythonapp:pythonapp /opt/app
+chown -R pythonapp:pythonapp miqscrape
 
 # Put supervisor configuration in proper place
-cp /opt/app/gce/python-app.conf /etc/supervisor/conf.d/python-app.conf
+cp /miqscrape/python-app.conf /etc/supervisor/conf.d/python-app.conf
 
 # Start service via supervisorctl
 supervisorctl reread

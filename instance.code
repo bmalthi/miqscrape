@@ -11,4 +11,4 @@ gcloud compute instances create $MY_INSTANCE_NAME \
     --zone $ZONE \
     --tags http-server
 
-#gcloud compute instances get-serial-port-output $MY_INSTANCE_NAME --zone $ZONE    
+gcloud compute instances get-serial-port-output $MY_INSTANCE_NAME --zone $ZONE
