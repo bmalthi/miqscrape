@@ -15,33 +15,31 @@ app = Flask(__name__)
 
 @app.route('/scrape')
 def scrape():
-    start_time = str(datetime.datetime.now())
     url = 'https://allocation.miq.govt.nz/portal/'
     #TODO Rotate id
     agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:70.0) Gecko/20100101 Firefox/70.0'
     req = Request(url, headers={'User-Agent': agent})
     html_bytes = urlopen(req).read()
     html = html_bytes.decode("utf-8")
-    #regex = r"<div class=\"no\" . aria-label=\"(\w+ \d+)\".+<\/div>"
     regex = r"<div (?!class=\"no\") . aria-label=\"(\w+ \d+)\".+<\/div>"
     test_str = html
     matches = re.finditer(regex, test_str, re.MULTILINE)
     dates = [match.group(1) for match in matches]
-    push_time = str(datetime.datetime.now())
+    #Timing test to my local WS
+    req = Request('http://222.153.101.43:9278', headers={'User-Agent': agent})
+    urlopen(req).read()
     if len(dates) > 0:
         s = 'Open Dates:<br>'
         for d in dates:
             s = s + d + '<br>'
         message('MIQDATE:\n'+str(dates))
-        pushpubsub('MIQDATE:\n'+str(dates)+'\nS:'+start_time+'\nP:'+push_time)
+        pushpubsub('MIQDATE:\n'+str(dates))
         return s
     else:
-        #message('MIQDATE: NONE')
-        pull_date = str(datetime.datetime.now())        
-        pushpubsub('MIQDATE:NONE\nS:'+start_time+'\nP:'+push_time)
+        pushpubsub('MIQDATE:NONE')
         return 'No Open Dates'
 
-@app.route('/message')
+# Do Txt message
 def message(txt='helloworld'):
     account_sid = TWILIO_ACCOUNT_SID
     auth_token = TWILIO_AUTH_TOKEN
@@ -53,6 +51,7 @@ def message(txt='helloworld'):
                             )
     return message.sid
 
+# Do Pub Sub
 def pushpubsub(message):
     project_id = "miqbooking"
     topic_id = "miqdate"
@@ -66,7 +65,7 @@ def pushpubsub(message):
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return 'Hey Hens!'
+    return 'Move on Please!'
 
 if __name__ == '__main__':
     server_port = os.environ.get('PORT', '8080')
