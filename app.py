@@ -1,19 +1,3 @@
-# Copyright 2018 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# [START gae_python38_app]
-# [START gae_python3_app]
 from flask import Flask
 from urllib.request import Request, urlopen
 import re
@@ -24,8 +8,7 @@ from twilio.rest import Client
 TWILIO_ACCOUNT_SID = 'AC4ff56a6d29868282b983c5b1b5816af5'
 TWILIO_AUTH_TOKEN = '3fe5cba01d25c4a6889245a2087d54f1'
 
-# If `entrypoint` is not defined in app.yaml, App Engine will look for an app
-# called `app` in `main.py`.
+# pylint: disable=C0103
 app = Flask(__name__)
 
 @app.route('/scrape')
@@ -63,17 +46,10 @@ def message(txt='helloworld'):
     return message.sid
 
 @app.route('/')
-#@app.route('/', methods=['GET']) #As per example?
 def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
 
-
-
 if __name__ == '__main__':
-    # This is used when running locally only. When deploying to Google App
-    # Engine, a webserver process such as Gunicorn will serve the app. This
-    # can be configured by adding an `entrypoint` to app.yaml.
-    app.run(host='127.0.0.1', port=8080, debug=True)
-# [END gae_python3_app]
-# [END gae_python38_app]
+    server_port = os.environ.get('PORT', '8080')
+    app.run(debug=False, port=server_port, host='0.0.0.0')
