@@ -48,7 +48,7 @@ def message(txt='helloworld'):
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return 'Hello World!'
+    return 'Hey Hens!'
 
 if __name__ == '__main__':
     server_port = os.environ.get('PORT', '8080')
