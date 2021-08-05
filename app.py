@@ -1,5 +1,6 @@
 from flask import Flask
 from urllib.request import Request, urlopen
+import urllib.parse
 import re
 import os
 from twilio.rest import Client
@@ -24,20 +25,15 @@ def scrape():
     regex = r"<div (?!class=\"no\") . aria-label=\"(\w+ \d+)\".+<\/div>"
     test_str = html
     matches = re.finditer(regex, test_str, re.MULTILINE)
-    dates = [match.group(1) for match in matches]
-    #Timing test to my local WS
-    req = Request('http://222.153.101.43:9278', headers={'User-Agent': agent})
-    urlopen(req).read()
+    dates = [match.group(1) for match in matches] 
+    dates_str = ('None' if len(dates) == 0 else str(dates))
+    dates_encode = urllib.parse.quote_plus(dates_str)
+    req = Request('http://222.153.101.43:9278?dates='+dates_encode, headers={'User-Agent': agent})
+    urlopen(req).read()    
     if len(dates) > 0:
-        s = 'Open Dates:<br>'
-        for d in dates:
-            s = s + d + '<br>'
-        message('MIQDATE:\n'+str(dates))
-        pushpubsub('MIQDATE:\n'+str(dates))
-        return s
-    else:
-        pushpubsub('MIQDATE:NONE')
-        return 'No Open Dates'
+        message('MIQDATE:\n'+dates_str)
+    pushpubsub('MIQDATE:\n'+dates_str)
+    return 'OpenDates:' + dates_str
 
 # Do Txt message
 def message(txt='helloworld'):
