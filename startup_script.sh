@@ -43,14 +43,9 @@ export HOME=/root
 gcloud source repos clone github_bmalthi_miqscrape /opt/app
 cd /opt/app
 git checkout main
-ls
-
-# Yolo Step
-export BASH_SOURCE-=yolo
 
 # Python environment setup
 virtualenv -p python3 /opt/app/env
-ls
 source /opt/app/env/bin/activate
 /opt/app/env/bin/pip3 install -r /opt/app/requirements.txt
 
