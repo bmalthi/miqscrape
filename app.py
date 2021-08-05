@@ -15,6 +15,7 @@ app = Flask(__name__)
 
 @app.route('/scrape')
 def scrape():
+    start_time = str(datetime.datetime.now())
     url = 'https://allocation.miq.govt.nz/portal/'
     #TODO Rotate id
     agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:70.0) Gecko/20100101 Firefox/70.0'
@@ -26,18 +27,18 @@ def scrape():
     test_str = html
     matches = re.finditer(regex, test_str, re.MULTILINE)
     dates = [match.group(1) for match in matches]
+    push_time = str(datetime.datetime.now())
     if len(dates) > 0:
         s = 'Open Dates:<br>'
         for d in dates:
             s = s + d + '<br>'
         message('MIQDATE:\n'+str(dates))
-        pull_date = str(datetime.datetime.now())        
-        pushpubsub('MIQDATE:\n'+str(dates)+'\nSent:'+pull_date)
+        pushpubsub('MIQDATE:\n'+str(dates)+'\nS:'+start_time+'\nP:'+push_time)
         return s
     else:
         #message('MIQDATE: NONE')
         pull_date = str(datetime.datetime.now())        
-        pushpubsub('MIQDATE:NONE'+'\nSent:'+pull_date)
+        pushpubsub('MIQDATE:NONE\nS:'+start_time+'\nP:'+push_time)
         return 'No Open Dates'
 
 @app.route('/message')
