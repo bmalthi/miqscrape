@@ -52,7 +52,7 @@ def message(txt='helloworld'):
 def pushpubsub(message):
     project_id = "miqbooking"
     topic_id = "miqdate"
-    publisher = pubsub_v1.PublisherClient()
+    publisher = pubsub_v1.PublisherClient(batch_settings=pubsub_v1.types.BatchSettings(max_messages=1))
     topic_path = publisher.topic_path(project_id, topic_id)
     # Data must be a bytestring
     data = message.encode("utf-8")
