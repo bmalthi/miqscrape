@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Echo commands
-set -v
+#set -v
 
 # [START getting_started_gce_startup_script]
 # Install Stackdriver logging agent
