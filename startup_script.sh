@@ -48,7 +48,8 @@ ls
 # Python environment setup
 virtualenv -p python3 /opt/app/env
 ls
-source /opt/app/env/bin/activate
+#source /opt/app/env/bin/activate
+. /opt/app/env/bin/activate
 /opt/app/env/bin/pip3 install -r /opt/app/requirements.txt
 
 # Set ownership to newly created account
