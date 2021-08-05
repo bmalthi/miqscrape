@@ -46,7 +46,7 @@ git checkout main
 ls
 
 # Yolo Step
-export BASH_SOURCE=yolo
+export BASH_SOURCE-=yolo
 
 # Python environment setup
 virtualenv -p python3 /opt/app/env
