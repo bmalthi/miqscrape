@@ -31,6 +31,7 @@ def scrape():
         message('MIQDATE:\n'+str(dates))
         return s
     else:
+        message('MIQDATE: NONE')
         return 'No Open Dates'
 
 @app.route('/message')
