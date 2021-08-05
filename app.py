@@ -3,6 +3,7 @@ from urllib.request import Request, urlopen
 import re
 import os
 from twilio.rest import Client
+from google.cloud import pubsub_v1
 
 #Really Naughty
 TWILIO_ACCOUNT_SID = 'AC4ff56a6d29868282b983c5b1b5816af5'
@@ -29,9 +30,11 @@ def scrape():
         for d in dates:
             s = s + d + '<br>'
         message('MIQDATE:\n'+str(dates))
+        pushpubsub('MIQDATE:\n'+str(dates))
         return s
     else:
         #message('MIQDATE: NONE')
+        pushpubsub('MIQDATE:NONE')
         return 'No Open Dates'
 
 @app.route('/message')
@@ -45,6 +48,16 @@ def message(txt='helloworld'):
                                 to='+14157543502'
                             )
     return message.sid
+
+def pushpubsub(message):
+    project_id = "miqbooking"
+    topic_id = "miqdate"
+    publisher = pubsub_v1.PublisherClient()
+    topic_path = publisher.topic_path(project_id, topic_id)
+    # Data must be a bytestring
+    data = message.encode("utf-8")
+    # When you publish a message, the client returns a future.
+    future = publisher.publish(topic_path, data)
 
 @app.route('/')
 def hello():
