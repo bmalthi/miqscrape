@@ -4,6 +4,7 @@ import re
 import os
 from twilio.rest import Client
 from google.cloud import pubsub_v1
+import datetime
 
 #Really Naughty
 TWILIO_ACCOUNT_SID = 'AC4ff56a6d29868282b983c5b1b5816af5'
@@ -18,6 +19,7 @@ def scrape():
     #TODO Rotate id
     agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:70.0) Gecko/20100101 Firefox/70.0'
     req = Request(url, headers={'User-Agent': agent})
+    pull_date = str(datetime.datetime.now())
     html_bytes = urlopen(req).read()
     html = html_bytes.decode("utf-8")
     #regex = r"<div class=\"no\" . aria-label=\"(\w+ \d+)\".+<\/div>"
@@ -30,11 +32,11 @@ def scrape():
         for d in dates:
             s = s + d + '<br>'
         message('MIQDATE:\n'+str(dates))
-        pushpubsub('MIQDATE:\n'+str(dates))
+        pushpubsub('MIQDATE:\n'+str(dates)+'\nSent:'+pull_date)
         return s
     else:
         #message('MIQDATE: NONE')
-        pushpubsub('MIQDATE:NONE')
+        pushpubsub('MIQDATE:NONE'+'\nSent:'+pull_date)
         return 'No Open Dates'
 
 @app.route('/message')
