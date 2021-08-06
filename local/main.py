@@ -44,8 +44,8 @@ def main():
         print('Pinging from ' +scraper +' T:' + str(end_time-start_time))
         print(response)
         if response != 'None':
-            break
             os.system('open -a Safari https://allocation.miq.govt.nz/portal/organisation/5f377e18-43bc-4d0e-a0d3-79be3a2324ec/event/MIQ-DEFAULT-EVENT/accommodation/arrival-date#step-2')
+            break
 
 if __name__ == '__main__':
     main()
