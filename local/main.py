@@ -4,6 +4,7 @@ import urllib.parse
 from random import randint
 import time
 import os
+from concurrent.futures import ThreadPoolExecutor
 
 scrapers = [
 'https://asia-northeast1-miqbooking.cloudfunctions.net/scrape-asia-northeast1',
@@ -29,23 +30,22 @@ user_agents = [
 ]
 
 def make_request(scraper, agent):
+    start_time = datetime.datetime.now()
     req = Request(scraper, headers={'User-Agent': agent})
-    html_bytes = urlopen(req).read()
-    html = html_bytes.decode("utf-8")
-    return html
+    response = urlopen(req).read().decode("utf-8")
+    end_time = datetime.datetime.now()
+    print('Pinging from ' +scraper +' T:' + str(end_time-start_time))
+    print(response)
+    if 'None' not in response:
+        os.system('open -a Safari https://allocation.miq.govt.nz/portal/organisation/5f377e18-43bc-4d0e-a0d3-79be3a2324ec/event/MIQ-DEFAULT-EVENT/accommodation/arrival-date#step-2')
+        quit()
 
 def main():
+    currs = ThreadPoolExecutor(max_workers=3)
     while True:
         agent = user_agents[randint(0, len(user_agents)-1)]
         scraper = scrapers[randint(0, len(scrapers)-1)]
-        start_time = datetime.datetime.now()
-        response = make_request(scraper, agent)
-        end_time = datetime.datetime.now()
-        print('Pinging from ' +scraper +' T:' + str(end_time-start_time))
-        print(response)
-        if response != 'None':
-            os.system('open -a Safari https://allocation.miq.govt.nz/portal/organisation/5f377e18-43bc-4d0e-a0d3-79be3a2324ec/event/MIQ-DEFAULT-EVENT/accommodation/arrival-date#step-2')
-            break
+        currs.submit(make_request, scraper, agent)
 
 if __name__ == '__main__':
     main()
