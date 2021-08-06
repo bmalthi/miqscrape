@@ -13,13 +13,17 @@ def scrape(request):
     ### Send request to MIG
     url = 'https://allocation.miq.govt.nz/portal/'
     req = Request(url, headers={'User-Agent': agent})
-    response = urlopen(req)
-    html = response.read().decode("utf-8")
-    status_code = response.getcode()
-    regex = r"<div (?!class=\"no\") . aria-label=\"(\w+ \d+)\".+<\/div>"
-    matches = re.finditer(regex, html, re.MULTILINE)
-    dates = [match.group(1) for match in matches] 
-    dates_str = ('None' if len(dates) == 0 else str(dates))
+    try:
+        response = urlopen(req)
+        html = response.read().decode("utf-8")
+        status_code = response.getcode()
+        regex = r"<div (?!class=\"no\") . aria-label=\"(\w+ \d+)\".+<\/div>"
+        matches = re.finditer(regex, html, re.MULTILINE)
+        dates = [match.group(1) for match in matches] 
+        dates_str = ('None' if len(dates) == 0 else str(dates))        
+    except urllib.HTTPError as e:
+        status_code = 403
+        dates_str = None
     ### Add Pub Sub
     # pushpubsub(dates_str)
     ### Return result
