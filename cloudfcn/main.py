@@ -23,7 +23,7 @@ def scrape(request):
     ### Add Pub Sub
     # pushpubsub(dates_str)
     ### Return result
-    return status_code+'\n'+dates_str
+    return str(status_code)+'\n'+dates_str
 
 #def pushpubsub(message):
 #    project_id = "miqbooking"
