@@ -2,6 +2,7 @@ import datetime
 from urllib.request import Request, urlopen
 import urllib.parse
 from random import randint
+import time
 
 scrapers = [
 'https://asia-northeast1-miqbooking.cloudfunctions.net/scrape-asia-northeast1',
@@ -26,13 +27,20 @@ def make_request(scraper, agent):
     req = Request(scraper, headers={'User-Agent': agent})
     html_bytes = urlopen(req).read()
     html = html_bytes.decode("utf-8")
-    print(html)
+    return html
     #os.system('open -a Safari https://allocation.miq.govt.nz/portal/organisation/5f377e18-43bc-4d0e-a0d3-79be3a2324ec/event/MIQ-DEFAULT-EVENT/accommodation/arrival-date#step-2')
 
 def main():
-    agent = user_agents[randint(0, len(user_agents)-1)]
-    scraper = scrapers[randint(0, len(scrapers)-1)]
-    make_request(scraper, agent)
+    while True:
+        agent = user_agents[randint(0, len(user_agents)-1)]
+        scraper = scrapers[randint(0, len(scrapers)-1)]
+        print('Pinging from ' +scraper +' as ' +agent)
+        start_time = datetime.datetime.now()
+        response = make_request(scraper, agent)
+        end_time = datetime.datetime.now()
+        print(response)
+        print('Took: ' + str(end_time-start_time))
+        time.sleep(.5) #pause for half a second
 
 if __name__ == '__main__':
     main()
