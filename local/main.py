@@ -3,6 +3,7 @@ from urllib.request import Request, urlopen
 import urllib.parse
 from random import randint
 import time
+import os
 
 scrapers = [
 'https://asia-northeast1-miqbooking.cloudfunctions.net/scrape-asia-northeast1',
@@ -11,10 +12,12 @@ scrapers = [
 'https://europe-west2-miqbooking.cloudfunctions.net/scrape-europe-west2',
 'https://europe-west3-miqbooking.cloudfunctions.net/scrape-europe-west3',
 'https://europe-west6-miqbooking.cloudfunctions.net/scrape-europe-west6',
-'https://southamerica-east1-miqbooking.cloudfunctions.net/scrape-southamerica-east1',
+#'https://southamerica-east1-miqbooking.cloudfunctions.net/scrape-southamerica-east1', #SLOW
 'https://us-central1-miqbooking.cloudfunctions.net/scrape-us-central1',
 'https://us-east1-miqbooking.cloudfunctions.net/scrape-us-east1',
-'https://us-west2-miqbooking.cloudfunctions.net/scrape-us-west2'
+'https://us-west2-miqbooking.cloudfunctions.net/scrape-us-west2',
+'https://asia-east1-miqbooking.cloudfunctions.net/scrape-asia-east1',
+'https://asia-southeast2-miqbooking.cloudfunctions.net/scrape-asia-southeast2'
 ]
 
 user_agents = [
@@ -30,7 +33,6 @@ def make_request(scraper, agent):
     html_bytes = urlopen(req).read()
     html = html_bytes.decode("utf-8")
     return html
-    #os.system('open -a Safari https://allocation.miq.govt.nz/portal/organisation/5f377e18-43bc-4d0e-a0d3-79be3a2324ec/event/MIQ-DEFAULT-EVENT/accommodation/arrival-date#step-2')
 
 def main():
     while True:
@@ -41,7 +43,9 @@ def main():
         end_time = datetime.datetime.now()
         print('Pinging from ' +scraper +' T:' + str(end_time-start_time))
         print(response)
-        time.sleep(.5) #pause for half a second
+        if response != 'None':
+            break
+            os.system('open -a Safari https://allocation.miq.govt.nz/portal/organisation/5f377e18-43bc-4d0e-a0d3-79be3a2324ec/event/MIQ-DEFAULT-EVENT/accommodation/arrival-date#step-2')
 
 if __name__ == '__main__':
     main()
