@@ -13,8 +13,9 @@ def scrape(request):
     ### Send request to MIG
     url = 'https://allocation.miq.govt.nz/portal/'
     req = Request(url, headers={'User-Agent': agent})
-    html_bytes = urlopen(req).read()
-    html = html_bytes.decode("utf-8")
+    response = urlopen(req)
+    html = response.read().decode("utf-8")
+    status_code = response.getcode()
     regex = r"<div (?!class=\"no\") . aria-label=\"(\w+ \d+)\".+<\/div>"
     matches = re.finditer(regex, html, re.MULTILINE)
     dates = [match.group(1) for match in matches] 
@@ -22,7 +23,7 @@ def scrape(request):
     ### Add Pub Sub
     # pushpubsub(dates_str)
     ### Return result
-    return dates_str
+    return status_code+'\n'+dates_str
 
 #def pushpubsub(message):
 #    project_id = "miqbooking"
