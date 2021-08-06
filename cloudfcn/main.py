@@ -32,8 +32,8 @@ def scrape(request):
     # pushpubsub(dates_str)
     ### Ping Server with result
     # Not needed, since server gets response object anyway
-    # dates_encode = urllib.parse.quote_plus(dates_str)
-    # req = Request('http://222.153.101.43:9278?dates='+dates_encode, headers={'User-Agent': agent})    
+    dates_encode = urllib.parse.quote_plus(dates_str)
+    req = Request(master_url+'?dates='+dates_encode, headers={'User-Agent': agent})    
     ### Return result
     return dates_str
 
