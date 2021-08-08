@@ -1,24 +1,17 @@
-import datetime
-from urllib.request import Request, urlopen
-import urllib.parse
-from random import randint
+import threading
 import time
+import requests
+from queue import Queue
+import datetime
 import os
-from concurrent.futures import ThreadPoolExecutor
+import random
 
 scrapers = [
-'https://asia-northeast1-miqbooking.cloudfunctions.net/scrape-asia-northeast1',
-'https://asia-southeast1-miqbooking.cloudfunctions.net/scrape-asia-southeast1',
-'https://australia-southeast1-miqbooking.cloudfunctions.net/scrape-australia-southeast1',
-'https://europe-west2-miqbooking.cloudfunctions.net/scrape-europe-west2',
-'https://europe-west3-miqbooking.cloudfunctions.net/scrape-europe-west3',
-'https://europe-west6-miqbooking.cloudfunctions.net/scrape-europe-west6',
-#'https://southamerica-east1-miqbooking.cloudfunctions.net/scrape-southamerica-east1', #SLOW
-'https://us-central1-miqbooking.cloudfunctions.net/scrape-us-central1',
-'https://us-east1-miqbooking.cloudfunctions.net/scrape-us-east1',
-'https://us-west2-miqbooking.cloudfunctions.net/scrape-us-west2',
-'https://asia-east1-miqbooking.cloudfunctions.net/scrape-asia-east1',
-'https://asia-southeast2-miqbooking.cloudfunctions.net/scrape-asia-southeast2'
+'https://australia-southeast1-miqbooking.cloudfunctions.net/tester1',
+'https://australia-southeast1-miqbooking.cloudfunctions.net/tester2',
+'https://australia-southeast1-miqbooking.cloudfunctions.net/tester3',
+'https://australia-southeast1-miqbooking.cloudfunctions.net/tester4',
+'https://australia-southeast1-miqbooking.cloudfunctions.net/tester5',
 ]
 
 user_agents = [
@@ -29,23 +22,51 @@ user_agents = [
 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_1_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.1 Mobile/15E148 Safari/604.1'
 ]
 
-def make_request(scraper, agent):
-    start_time = datetime.datetime.now()
-    req = Request(scraper, headers={'User-Agent': agent})
-    response = urlopen(req).read().decode("utf-8")
-    end_time = datetime.datetime.now()
-    print('Pinging from ' +scraper +' T:' + str((end_time-start_time).total_seconds()) +' seconds')
-    print(response)
-    if 'None' not in response:
-        os.system('open -a Safari https://allocation.miq.govt.nz/portal/organisation/5f377e18-43bc-4d0e-a0d3-79be3a2324ec/event/MIQ-DEFAULT-EVENT/accommodation/arrival-date#step-2')
-        quit()
+q = Queue(maxsize=5)
+finished = threading.Event()
+
+# Keep queueing URLS to process
+def producer(queue):
+    global gcounter
+    while not finished.is_set():
+        time.sleep(0.01)
+        if not q.full():
+            agent = user_agents[random.randint(0, len(user_agents)-1)]
+            scraper = scrapers[random.randint(0, len(scrapers)-1)]
+            q.put({'agent': agent, 'scraper': scraper})
+
+# Multiple consumers work on queue
+def consumer(queue):
+    global finished
+    while not finished.is_set():
+        args = queue.get()
+        agent = args['agent']
+        scraper = args['scraper']
+        start_time = datetime.datetime.now()
+        raw_response = requests.get(scraper, headers={'User-Agent': agent})
+        response = raw_response.content.decode("utf-8")
+        end_time = datetime.datetime.now()
+        print('Pinging from ' +scraper +' T:' + str((end_time-start_time).total_seconds()) +' seconds')
+        print(response)
+        if 'None' not in response and not finished.is_set():
+            finished.set()
+            os.system('open -a Safari https://allocation.miq.govt.nz/portal/organisation/5f377e18-43bc-4d0e-a0d3-79be3a2324ec/event/MIQ-DEFAULT-EVENT/accommodation/arrival-date#step-2')
+            for i in range(10):
+                print('\a')
+        queue.task_done()
 
 def main():
-    currs = ThreadPoolExecutor(max_workers=3)
-    while True:
-        agent = user_agents[randint(0, len(user_agents)-1)]
-        scraper = scrapers[randint(0, len(scrapers)-1)]
-        currs.submit(make_request, scraper, agent)
+    producers = threading.Thread(target=producer, args=(q,))
+    producers.daemon = True
+    producers.start()
+
+    consumers = [threading.Thread(target=consumer, args=(q,))]
+    for thread in consumers:
+        thread.daemon = True
+        thread.start()
+    
+    for thread in consumers:
+        thread.join()
 
 if __name__ == '__main__':
     main()
