@@ -1,4 +1,7 @@
 steps:
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['functions', 'deploy', 'tester1', '--trigger-http', '--runtime', 'python39', '--entry-point', 'scrape']
+  args: ['functions', 'deploy', 'tester1', '--allow-unauthenticated', '--trigger-http', '--runtime', 'python39', '--entry-point', 'scrape', '--region', 'australia-southeast1']
   dir: 'cloudfcn'
+#https://cloud.google.com/sdk/gcloud/reference/functions/deploy
+
+
