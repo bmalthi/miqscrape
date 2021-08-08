@@ -24,10 +24,11 @@ user_agents = [
 
 q = Queue(maxsize=5)
 finished = threading.Event()
+gcounter = 1
+ten_start_time = datetime.datetime.now()
 
 # Keep queueing URLS to process
 def producer(queue):
-    global gcounter
     while not finished.is_set():
         time.sleep(0.01)
         if not q.full():
@@ -38,7 +39,12 @@ def producer(queue):
 # Multiple consumers work on queue
 def consumer(queue):
     global finished
-    while not finished.is_set():
+    global gcounter
+    global ten_start_time
+    while not finished.is_set(): 
+        if gcounter % 10 == 0:
+            print('Ten in '+ str((datetime.datetime.now()-ten_start_time).total_seconds()) +' seconds')
+            ten_start_time = datetime.datetime.now()
         args = queue.get()
         agent = args['agent']
         scraper = args['scraper']
@@ -53,6 +59,7 @@ def consumer(queue):
             os.system('open -a Safari https://allocation.miq.govt.nz/portal/organisation/5f377e18-43bc-4d0e-a0d3-79be3a2324ec/event/MIQ-DEFAULT-EVENT/accommodation/arrival-date#step-2')
             for i in range(10):
                 print('\a')
+        gcounter = gcounter + 1
         queue.task_done()
 
 def main():
